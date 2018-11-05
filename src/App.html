@@ -1,7 +1,49 @@
-<h1>Hello {name}!</h1>
 
-<style>
-	h1 {
-		color: purple;
-	}
-</style>
+<div class="input-group">
+  <input
+		placeholder="Search some twet"
+		bind:value=word type="text"
+		class="form-control"
+		aria-label="Search something"
+		on:keydown="searchTwet()"
+	>
+</div>
+{#if statuses && statuses.length > 0}
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">Text</th>
+	      <th scope="col">User</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+			{#each statuses as status}
+		    <tr>
+		      <td>{status.text}</td>
+					<td>{status.user.name}</td>
+		      <td><img src="{status.user.profile_image_url}" alt="Twitter"></td>
+		    </tr>
+			{/each}
+	  </tbody>
+	</table>
+{/if}
+<script>
+	export default {
+		methods: {
+			searchTwet() {
+				const {word} = this.get();
+				if (!word) {
+					return;
+				}
+
+				axios.get(`http://127.0.0.1:3003/twet/${word}`)
+				.then(response => {
+					const {statuses} = response.data;
+					// Update srore
+					app.set({statuses});
+				})
+				.catch(console.log);
+			}
+		}
+	};
+</script>
